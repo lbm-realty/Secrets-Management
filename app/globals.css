@@ -1,26 +1,54 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-primary: #0d0f12;
+  --bg-secondary: #13161b;
+  --bg-card: #1a1d24;
+  --bg-card-hover: #1f232c;
+  --border: #2a2d36;
+  --border-glow: rgba(168, 255, 62, 0.3);
+  --accent: #a8ff3e;
+  --accent-dim: #7acc2b;
+  --text-primary: #f0f2f5;
+  --text-secondary: #8b909a;
+  --text-muted: #555a66;
+  --red: #ff5c5c;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(168, 255, 62, 0); }
+  50% { box-shadow: 0 0 20px 4px rgba(168, 255, 62, 0.15); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+.glow-pulse {
+  animation: pulse-glow 2.5s ease-in-out infinite;
 }
