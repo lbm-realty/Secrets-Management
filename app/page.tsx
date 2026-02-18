@@ -1,63 +1,149 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import Header from "./components/Header";
+import GreetButton from "./components/GreetButton";
+import ResponseCard from "./components/ResponseCard";
+
+type ApiResponse = {
+  message: string;
+  secretKey: string;
+};
 
 export default function Home() {
+  const [message, setMessage] = useState<string | null>(null);
+  const [secretKey, setSecretKey] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<"hi" | "bye" | null>(null);
+
+  const handleGreet = async (type: "hi" | "bye") => {
+    setLoading(type);
+    setMessage(null);
+    setError(null);
+    setSecretKey(null);
+
+    try {
+      const res = await fetch(`/api/greet?type=${type}`);
+      const data: ApiResponse = await res.json();
+      if (!res.ok) throw new Error((data as any).error || "Something went wrong");
+      setMessage(data.message);
+      setSecretKey(data.secretKey);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(null);
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div style={{ minHeight: "100vh", backgroundColor: "var(--bg-primary)" }}>
+      <Header />
+
+      <main
+        style={{
+          maxWidth: "1100px",
+          margin: "0 auto",
+          padding: "80px 24px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        {/* Tag */}
+        <div
+          style={{
+            marginBottom: "24px",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "6px 14px",
+            borderRadius: "20px",
+            border: "1px solid var(--border)",
+            backgroundColor: "var(--bg-card)",
+          }}
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#a8ff3e" strokeWidth="2.5">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          <span style={{ fontSize: "12px", color: "var(--text-secondary)", fontFamily: "var(--font-geist-mono)" }}>
+            powered by infisical
+          </span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Heading */}
+        <h1
+          style={{
+            fontSize: "clamp(32px, 5vw, 52px)",
+            fontWeight: 700,
+            textAlign: "center",
+            lineHeight: 1.2,
+            marginBottom: "16px",
+            color: "var(--text-primary)",
+          }}
+        >
+          Secret{" "}
+          <span style={{ color: "var(--accent)" }}>Greeter</span>
+        </h1>
+
+        {/* Subtitle */}
+        <p
+          style={{
+            maxWidth: "480px",
+            textAlign: "center",
+            fontSize: "16px",
+            color: "var(--text-secondary)",
+            lineHeight: 1.7,
+            marginBottom: "52px",
+          }}
+        >
+          This app reads greeting values from{" "}
+          <span style={{ color: "var(--accent)", fontWeight: 500 }}>Infisical</span>{" "}
+          at runtime — no secrets hardcoded, no secrets in GitHub. Injected
+          securely via GitHub Actions CI.
+        </p>
+
+        {/* Buttons */}
+        <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
+          <GreetButton type="hi" onClick={() => handleGreet("hi")} loading={loading === "hi"} />
+          <GreetButton type="bye" onClick={() => handleGreet("bye")} loading={loading === "bye"} />
+        </div>
+
+        {/* Response */}
+        <ResponseCard message={message} error={error} secretKey={secretKey} />
+
+        {/* Info strip */}
+        <div
+          style={{
+            marginTop: "72px",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: "16px",
+            width: "100%",
+            maxWidth: "680px",
+          }}
+        >
+          {[
+            { icon: "🔐", title: "Zero hardcoded secrets", desc: "All values live in Infisical" },
+            { icon: "⚙️", title: "GitHub Actions CI", desc: "Secrets injected at build + test time" },
+            { icon: "🚀", title: "Deployed on Vercel", desc: "Runtime env vars from Infisical" },
+          ].map((item) => (
+            <div
+              key={item.title}
+              style={{
+                padding: "20px",
+                borderRadius: "10px",
+                border: "1px solid var(--border)",
+                backgroundColor: "var(--bg-card)",
+              }}
+            >
+              <div style={{ fontSize: "20px", marginBottom: "8px" }}>{item.icon}</div>
+              <p style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "4px" }}>
+                {item.title}
+              </p>
+              <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>{item.desc}</p>
+            </div>
+          ))}
         </div>
       </main>
     </div>
