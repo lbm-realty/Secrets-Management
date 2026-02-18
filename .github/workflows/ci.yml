@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build & Check Secrets
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify secrets are available
+        env:
+          HI_NAME: ${{ secrets.HI_NAME }}
+          BYE_NAME: ${{ secrets.BYE_NAME }}
+        run: |
+          echo "Checking secrets are present..."
+          if [ -z "$HI_NAME" ]; then echo "HI_NAME is missing!"; exit 1; fi
+          if [ -z "$BYE_NAME" ]; then echo "BYE_NAME is missing!"; exit 1; fi
+          echo "All secrets verified successfully."
+
+      - name: Build
+        env:
+          HI_NAME: ${{ secrets.HI_NAME }}
+          BYE_NAME: ${{ secrets.BYE_NAME }}
+        run: npm run build
