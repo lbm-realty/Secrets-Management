@@ -1,0 +1,7 @@
+{
+  secrets: {
+    HI_NAME: "present",
+    BYE_NAME: "present"
+  },
+  status: "healthy"
+}
