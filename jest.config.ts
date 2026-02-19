@@ -6,6 +6,7 @@ const config: Config = {
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",
   },
+  // @ts-ignore
   testPathPattern: ["__tests__"],
   transform: {
     "^.+\\.tsx?$": ["ts-jest", { tsconfig: { jsx: "react" } }],
